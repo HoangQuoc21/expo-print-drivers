@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["PrinterDriversModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.printerdrivers.PrinterDriversModule"]
+  }
+}
