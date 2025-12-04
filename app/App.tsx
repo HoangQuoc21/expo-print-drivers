@@ -14,9 +14,23 @@ import {
   useBluetoothConnection,
   BluetoothDevice,
   BluetoothService,
+  TicketPrinter,
 } from "../modules/printer-drivers";
 import { styles, colors } from "./App.styles";
 import { isEqual } from "lodash";
+import { FileHelper } from "./utils/helpers/file-helper";
+import PrinterDriversModule from "../modules/printer-drivers/src/PrinterDriversModule";
+
+const MA_QR =
+  "https://files.get-qr.com/files/693132726b6b00d09b72c063/8pz4q0.png?v=2025-12-04T07:04:20.173Z";
+
+const testPrinterData = {
+  name: "Nguyen Van A",
+  address: "123 Le Loi, District 1, HCM City",
+  money: 150000,
+  isMale: true,
+  hobbies: ["reading", "traveling", "swimming"],
+};
 
 export default function App() {
   const [devices, setDevices] = useState<BluetoothDevice[]>([]);
@@ -61,6 +75,15 @@ export default function App() {
     }
   }, [status]);
 
+  useEffect(() => {
+    const qrExists = FileHelper.checkFileExists("ma_qr.png");
+    if (!qrExists) {
+      FileHelper.downloadFile(MA_QR, "ma_qr.png");
+    } else {
+      console.log("--> QR file URI:", FileHelper.getFileUri("ma_qr.png"));
+    }
+  }, []);
+
   const loadPairedDevices = async () => {
     if (!granted) {
       const hasPermission = await requestPermissions();
@@ -94,6 +117,13 @@ export default function App() {
 
   const handleDisconnect = async () => {
     await disconnect();
+  };
+
+  const handlePrint = () => {
+    TicketPrinter.giayBaoTienNuocNongThon(
+      PrinterDriversModule.PrinterType.WOOSIM_WSP_i350,
+      testPrinterData
+    );
   };
 
   const renderHeader = () => (
@@ -196,26 +226,39 @@ export default function App() {
           <Text style={styles.deviceName}>{item.name}</Text>
           <Text style={styles.deviceAddress}>{item.address}</Text>
         </View>
-        <TouchableOpacity
-          style={[
-            styles.connectButton,
-            buttonConfig.backgroundColor && {
-              backgroundColor: buttonConfig.backgroundColor,
-            },
-            isAnyDeviceBusy && styles.connectButtonDisabled,
-          ]}
-          onPress={buttonConfig.onPress}
-          disabled={isAnyDeviceBusy}
-        >
-          <Text
+        <View style={styles.deviceCardButton}>
+          <TouchableOpacity
             style={[
-              styles.connectButtonText,
-              isAnyDeviceBusy && styles.connectButtonTextDisabled,
+              styles.connectButton,
+              buttonConfig.backgroundColor && {
+                backgroundColor: buttonConfig.backgroundColor,
+              },
+              isAnyDeviceBusy && styles.connectButtonDisabled,
             ]}
+            onPress={buttonConfig.onPress}
+            disabled={isAnyDeviceBusy}
           >
-            {buttonConfig.text}
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={[
+                styles.connectButtonText,
+                isAnyDeviceBusy && styles.connectButtonTextDisabled,
+              ]}
+            >
+              {buttonConfig.text}
+            </Text>
+          </TouchableOpacity>
+          {isThisDeviceConnected && (
+            <TouchableOpacity
+              style={[
+                styles.connectButton,
+                { backgroundColor: colors.primary },
+              ]}
+              onPress={handlePrint}
+            >
+              <Text style={styles.connectButtonText}>Print</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     );
   };

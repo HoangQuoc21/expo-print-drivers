@@ -136,7 +136,6 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     ...shadows.small,
   },
   deviceInfo: {
@@ -208,5 +207,9 @@ export const styles = StyleSheet.create({
   },
   connectButtonTextDisabled: {
     color: colors.disabledText,
+  },
+  deviceCardButton: {
+    gap: 10,
+    justifyContent: "center",
   },
 });
