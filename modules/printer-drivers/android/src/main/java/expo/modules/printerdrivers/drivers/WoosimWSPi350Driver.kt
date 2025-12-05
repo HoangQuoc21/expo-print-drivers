@@ -192,7 +192,7 @@ class WoosimWSPi350Driver(
 //        addAlignStringToBuffer("Quét mã để thanh toán\n", WoosimCmd.ALIGN_CENTER)
 //        addBitmapToBuffer(maQRFileName)
 
-        addAlignStringToBuffer("Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\"\n")
+        addAlignStringToBuffer("Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n")
 
         addLineFeedToBuffer(3)
         sendPrintData()

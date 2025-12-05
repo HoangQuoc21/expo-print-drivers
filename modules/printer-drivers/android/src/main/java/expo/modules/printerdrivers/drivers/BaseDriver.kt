@@ -13,8 +13,12 @@ abstract class BaseDriver (private val bluetoothService: BluetoothService) {
     protected fun clearBuffer() {
         buffer.clear()
     }
-    protected fun sendPrintData() {
-        bluetoothService.write(buffer.array())
+   protected fun sendPrintData() {
+        // Only send the data that was actually written to the buffer
+        val data = ByteArray(buffer.position())
+        buffer.rewind()
+        buffer.get(data)
+        bluetoothService.write(data)
     }
     abstract fun initPrinter()
     abstract fun giayBaoTienNuocNongThon(jsonData: ReadableMap)
