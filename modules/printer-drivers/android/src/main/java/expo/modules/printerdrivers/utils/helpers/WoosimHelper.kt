@@ -41,7 +41,7 @@ object WoosimHelper {
         buffer.put(str.toByteArray(charset))
         resetTextAttributes(bold, doubleHeight)
 
-        return PrinterHelper.convertBufferToByteArray(buffer)
+        return CommonHelper.convertBufferToByteArray(buffer)
     }
 
     fun addTwoMarginedStrings(
@@ -82,7 +82,7 @@ object WoosimHelper {
                 buffer.put(WoosimCmd.setTextAlign(WoosimCmd.ALIGN_LEFT))
             } else {
                 // If still too long even without space, then wrap
-                val str = PrinterHelper.wordWrapStr("$str1 $str2")
+                val str = CommonHelper.wordWrapStr("$str1 $str2")
                 buffer.put(WoosimCmd.setTextAlign(WoosimCmd.ALIGN_LEFT))
                 buffer.put(str.toByteArray(charset))
                 buffer.put(WoosimCmd.printLineFeed(0))
@@ -98,7 +98,7 @@ object WoosimHelper {
 
         resetTextAttributes(bold, doubleHeight)
 
-        return PrinterHelper.convertBufferToByteArray(buffer)
+        return CommonHelper.convertBufferToByteArray(buffer)
     }
 
     fun addImage(context: Context, fileName: String): ByteArray {
@@ -119,7 +119,7 @@ object WoosimHelper {
             put(WoosimCmd.setAlignment(WoosimCmd.ALIGN_LEFT))
         }
 
-        return PrinterHelper.convertBufferToByteArray(buffer)
+        return CommonHelper.convertBufferToByteArray(buffer)
     }
 
     fun addThreeMarginedStrings(
@@ -144,7 +144,7 @@ object WoosimHelper {
             val totalLen = left.length + middle.length + right.length
             if (totalLen > len) {
                 // Overflow: wrap the combined text
-                val wrapped = PrinterHelper.wordWrapStr("$left $middle $right")
+                val wrapped = CommonHelper.wordWrapStr("$left $middle $right")
                 buffer.put(WoosimCmd.setTextAlign(WoosimCmd.ALIGN_LEFT))
                 buffer.put(wrapped.toByteArray(charset))
                 buffer.put(WoosimCmd.printLineFeed(0))
@@ -187,7 +187,7 @@ object WoosimHelper {
             ex.printStackTrace()
         }
 
-        return PrinterHelper.convertBufferToByteArray(buffer)
+        return CommonHelper.convertBufferToByteArray(buffer)
     }
 
     fun addLineFeed(lines: Int = 1): ByteArray {

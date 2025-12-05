@@ -3,7 +3,7 @@ package expo.modules.printerdrivers.utils.helpers
 import expo.modules.printerdrivers.utils.constants.PrinterPageSize
 import java.nio.ByteBuffer
 
-object PrinterHelper {
+object CommonHelper {
     fun addSeparateLine(length: Int = PrinterPageSize.width): ByteArray {
         var line = "-".repeat(length)
         line+="\n"

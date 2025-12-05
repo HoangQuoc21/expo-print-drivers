@@ -7,9 +7,11 @@ import java.nio.ByteBuffer
 
 class Honeywell0188Driver(private val bluetoothService: BluetoothService): BaseDriver(bluetoothService) {
     override var driverName: String = "Honeywell0188Driver"
-    override var buffer: ByteBuffer = ByteBuffer.allocate(512 * 30)
 
+    override fun initPrinter() {
+        TODO("Not yet implemented")
+    }
     override fun giayBaoTienNuocNongThon(jsonData: ReadableMap) {
-        Log.d(driverName, "--> giayBaoTienNuocGiaDinhVer1: ${jsonData.toString()}")
+        Log.d(driverName, "--> giayBaoTienNuocGiaDinhVer1: $jsonData")
     }
 }
