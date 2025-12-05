@@ -10,7 +10,7 @@ import expo.modules.printerdrivers.utils.helpers.WoosimHelper
 import java.util.Date
 
 class WoosimWSPi350Driver(
-    private val bluetoothService: BluetoothService,
+    bluetoothService: BluetoothService,
     private val context: Context
 ) :
     BaseDriver(bluetoothService) {
