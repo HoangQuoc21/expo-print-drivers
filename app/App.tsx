@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, use, useEffect, useState } from "react";
 import {
   Button,
   ScrollView,
@@ -120,8 +120,13 @@ export default function App() {
   };
 
   const handlePrint = () => {
+    const useWoosim = status.connectedDevice?.name
+      .toLowerCase()
+      .includes("woosim");
     TicketPrinter.giayBaoTienNuocNongThon(
-      PrinterDriversModule.PrinterType.HONEYWELL_PR3,
+      useWoosim
+        ? PrinterDriversModule.PrinterType.WOOSIM_WSP_i350
+        : PrinterDriversModule.PrinterType.HONEYWELL_PR3,
       testPrinterData
     );
   };
@@ -275,12 +280,35 @@ export default function App() {
     );
   };
 
+  const renderRefreshButton = () => {
+    return (
+      <TouchableOpacity
+        style={[
+          styles.refreshButton,
+          (!granted || !isEnabled) && styles.refreshButtonDisabled,
+        ]}
+        onPress={loadPairedDevices}
+        disabled={!granted || !isEnabled}
+      >
+        <Text
+          style={[
+            styles.refreshButtonText,
+            (!granted || !isEnabled) && styles.refreshButtonTextDisabled,
+          ]}
+        >
+          Refresh devices
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.screen}>
       <ScrollView style={styles.container}>
         {renderHeader()}
         {renderBluetoothStatus()}
         {renderPermissionStatus()}
+        {renderRefreshButton()}
         <Text style={styles.subtitle}>Paired Devices:</Text>
         {renderDeviceList()}
       </ScrollView>
