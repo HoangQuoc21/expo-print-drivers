@@ -12,13 +12,14 @@ abstract class BaseDriver(
 ) {
     var buffer: ByteBuffer = ByteBuffer.allocate(50 * KiB)
     abstract var driverName: String
+    abstract var printerPageWidth: Int
 
 
-    protected fun clearBuffer() {
+    fun clearBuffer() {
         buffer.clear()
     }
 
-    protected fun sendPrintData() {
+     fun sendPrintData() {
         // Only send the data that was actually written to the buffer
         val data = ByteArray(buffer.position())
         buffer.rewind()

@@ -10,7 +10,7 @@ object CommonHelper {
         return line.toByteArray()
     }
 
-    fun wordWrapStr(source: String?, len: Int = 36): String {
+    fun wordWrapStr(source: String?, len: Int): String {
         if (source == null) {
             return ""
         }

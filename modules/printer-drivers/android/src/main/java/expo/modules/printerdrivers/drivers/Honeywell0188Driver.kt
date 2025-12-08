@@ -9,6 +9,7 @@ import java.nio.ByteBuffer
 class Honeywell0188Driver(bluetoothService: BluetoothService, context: Context) :
     BaseDriver(bluetoothService, context) {
     override var driverName: String = "Honeywell0188Driver"
+    override var printerPageWidth: Int = 36
 
     override fun initPrinter() {
         TODO("Not yet implemented")

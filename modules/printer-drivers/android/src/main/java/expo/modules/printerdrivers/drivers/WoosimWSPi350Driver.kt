@@ -15,6 +15,7 @@ class WoosimWSPi350Driver(
 ) :
     BaseDriver(bluetoothService, context) {
     override var driverName: String = "WoosimWSPi350Driver"
+    override var printerPageWidth: Int = 36
 
     override fun initPrinter() {
         buffer.put(WoosimCmd.initPrinter())
@@ -28,7 +29,7 @@ class WoosimWSPi350Driver(
     ) {
         buffer.put(
             WoosimHelper.addAlignedString(
-                CommonHelper.wordWrapStr(str),
+                CommonHelper.wordWrapStr(str, printerPageWidth),
                 align,
                 bold,
                 doubleHeight
@@ -110,8 +111,6 @@ class WoosimWSPi350Driver(
         val diDongNguoiDung = "0918145295"
         val maQRFileName = "ma_qr.png"
 
-
-        clearBuffer()
         initPrinter()
 
 //        addSeparateLineToBuffer()
@@ -195,6 +194,5 @@ class WoosimWSPi350Driver(
         addAlignStringToBuffer("Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n")
 
         addLineFeedToBuffer(3)
-        sendPrintData()
     }
 }

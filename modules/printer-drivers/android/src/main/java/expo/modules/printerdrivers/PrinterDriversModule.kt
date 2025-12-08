@@ -16,6 +16,7 @@ import expo.modules.printerdrivers.drivers.Honeywell0188Driver
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.printerdrivers.bluetoothService.BluetoothConnectionState
+import expo.modules.printerdrivers.drivers.BaseDriver
 import expo.modules.printerdrivers.drivers.HoneywellPR3Driver
 import expo.modules.printerdrivers.utils.constants.PrinterType
 
@@ -28,10 +29,12 @@ class PrinterDriversModule : Module() {
     private val eventHandler = object : BluetoothEventHandler {
         override fun onDeviceConnected(deviceName: String, deviceAddress: String) {
             Log.d(TAG, "--> onDeviceConnected: $deviceName ($deviceAddress)")
-            sendEvent("onDeviceConnected", mapOf(
-                "deviceName" to deviceName,
-                "deviceAddress" to deviceAddress
-            ))
+            sendEvent(
+                "onDeviceConnected", mapOf(
+                    "deviceName" to deviceName,
+                    "deviceAddress" to deviceAddress
+                )
+            )
         }
 
         override fun onDeviceDisconnected() {
@@ -70,7 +73,7 @@ class PrinterDriversModule : Module() {
     }
     private val honeywell0188Driver: Honeywell0188Driver by lazy {
         val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-        Honeywell0188Driver(bluetoothService,context)
+        Honeywell0188Driver(bluetoothService, context)
     }
     private val honeywellPR3Driver: HoneywellPR3Driver by lazy {
         val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -192,12 +195,23 @@ class PrinterDriversModule : Module() {
             bluetoothService.stop()
         }
 
+        fun getDriver(printerType: String): BaseDriver {
+            return when (printerType) {
+                PrinterType.WOOSIM_WSP_i350 -> woosimWSPi350Driver
+                PrinterType.HONEYWELL_PR3 -> honeywellPR3Driver
+                PrinterType.HONEYWELL_0188 -> honeywell0188Driver
+                else -> throw IllegalArgumentException("Unknown printer type: $printerType")
+            }
+        }
+
         Function("giayBaoTienNuocNongThon") { printerType: String, jsonData: ReadableMap ->
-            when (printerType) {
-                PrinterType.WOOSIM_WSP_i350 -> woosimWSPi350Driver.giayBaoTienNuocNongThon(jsonData)
-                PrinterType.HONEYWELL_0188 -> honeywell0188Driver.giayBaoTienNuocNongThon(jsonData)
-                PrinterType.HONEYWELL_PR3 -> honeywellPR3Driver.giayBaoTienNuocNongThon(jsonData)
-                else -> Log.e(TAG, "--> Printer type not supported: $printerType")
+            try {
+                val usingDriver = getDriver(printerType)
+                usingDriver.clearBuffer()
+                usingDriver.giayBaoTienNuocNongThon(jsonData)
+                usingDriver.sendPrintData()
+            } catch (err: Error) {
+                Log.e(TAG, "--> Error in giayBaoTienNuocNongThon: $err")
             }
         }
     }

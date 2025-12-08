@@ -49,7 +49,7 @@ object WoosimHelper {
         str2: String = "",
         bold: Boolean = false,
         doubleHeight: Boolean = false,
-        len: Int = PrinterPageSize.width,
+        len: Int = PrinterPageSize.width + 1,
         charset: Charset = StandardCharsets.UTF_8,
     ): ByteArray {
         val estimatedSize = 64 + str1.toByteArray(charset).size + str2.toByteArray(charset).size
@@ -82,7 +82,7 @@ object WoosimHelper {
                 buffer.put(WoosimCmd.setTextAlign(WoosimCmd.ALIGN_LEFT))
             } else {
                 // If still too long even without space, then wrap
-                val str = CommonHelper.wordWrapStr("$str1 $str2")
+                val str = CommonHelper.wordWrapStr("$str1 $str2", len)
                 buffer.put(WoosimCmd.setTextAlign(WoosimCmd.ALIGN_LEFT))
                 buffer.put(str.toByteArray(charset))
                 buffer.put(WoosimCmd.printLineFeed(0))
@@ -144,7 +144,7 @@ object WoosimHelper {
             val totalLen = left.length + middle.length + right.length
             if (totalLen > len) {
                 // Overflow: wrap the combined text
-                val wrapped = CommonHelper.wordWrapStr("$left $middle $right")
+                val wrapped = CommonHelper.wordWrapStr("$left $middle $right", len)
                 buffer.put(WoosimCmd.setTextAlign(WoosimCmd.ALIGN_LEFT))
                 buffer.put(wrapped.toByteArray(charset))
                 buffer.put(WoosimCmd.printLineFeed(0))
