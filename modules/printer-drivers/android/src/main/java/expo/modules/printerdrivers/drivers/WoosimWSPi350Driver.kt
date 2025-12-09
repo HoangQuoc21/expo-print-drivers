@@ -16,20 +16,21 @@ class WoosimWSPi350Driver(
     BaseDriver(bluetoothService, context) {
     override var driverName: String = "WoosimWSPi350Driver"
     override var printerPageWidth: Int = 36
+    override var separateLineLength: Int = 16
 
     override fun initPrinter() {
         buffer.put(WoosimCmd.initPrinter())
     }
 
-    private fun addAlignStringToBuffer(
-        str: String,
-        align: Int = WoosimCmd.ALIGN_LEFT,
-        bold: Boolean = false,
-        doubleHeight: Boolean = false
+    override fun addAlignedStringToBuffer(
+        string: String,
+        align: Int,
+        bold: Boolean,
+        doubleHeight: Boolean
     ) {
         buffer.put(
             WoosimHelper.addAlignedString(
-                CommonHelper.wordWrapStr(str, printerPageWidth),
+                CommonHelper.createWrappedString(string, printerPageWidth),
                 align,
                 bold,
                 doubleHeight
@@ -68,15 +69,11 @@ class WoosimWSPi350Driver(
         )
     }
 
-    private fun addSeparateLineToBuffer() {
-        buffer.put(CommonHelper.addSeparateLine())
-    }
-
-    private fun addLineFeedToBuffer(lineNumber: Int = 1) {
+    override fun addLineFeedToBuffer(lineNumber: Int) {
         buffer.put(WoosimHelper.addLineFeed(lineNumber))
     }
 
-    private fun addBitmapToBuffer(fileName: String) {
+    override fun addBitmapToBuffer(fileName: String) {
         buffer.put(WoosimHelper.addImage(context, fileName))
     }
 
@@ -110,8 +107,6 @@ class WoosimWSPi350Driver(
         val hoTenNguoiDung = "Dương Văn Dẫn"
         val diDongNguoiDung = "0918145295"
         val maQRFileName = "ma_qr.png"
-
-        initPrinter()
 
 //        addSeparateLineToBuffer()
 //        addAlignStringToBuffer(
@@ -191,7 +186,9 @@ class WoosimWSPi350Driver(
 //        addAlignStringToBuffer("Quét mã để thanh toán\n", WoosimCmd.ALIGN_CENTER)
 //        addBitmapToBuffer(maQRFileName)
 
-        addAlignStringToBuffer("Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n")
+        addSeparateLineToBuffer()
+        addAlignedStringToBuffer("Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n")
+        addSeparateLineToBuffer()
 
         addLineFeedToBuffer(3)
     }

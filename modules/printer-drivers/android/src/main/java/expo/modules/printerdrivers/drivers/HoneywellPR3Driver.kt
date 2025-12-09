@@ -2,23 +2,33 @@ package expo.modules.printerdrivers.drivers
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.util.Log
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.printerdrivers.bluetoothService.BluetoothService
 import expo.modules.printerdrivers.utils.constants.PR3Command
+import expo.modules.printerdrivers.utils.helpers.CommonHelper
 import honeywell.printer.DocumentLP
 import java.io.File
 
 class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
     BaseDriver(bluetoothService, context) {
     override var driverName = "HoneywellPR3Driver"
-    override var printerPageWidth: Int = 52
+    override var printerPageWidth: Int = 53
+    override var separateLineLength: Int = 71
 
     override fun initPrinter() {
         // buffer.put(PR3Command.INIT)
     }
 
-    fun addImageToBuffer(fileName: String) {
+    override fun addAlignedStringToBuffer(
+        string: String,
+        align: Int,
+        bold: Boolean,
+        doubleHeight: Boolean
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override fun addBitmapToBuffer(fileName: String) {
         val docLP = DocumentLP("!")
 
         try {
@@ -45,39 +55,43 @@ class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
         buffer.put(docLP.documentData)
     }
 
+    override fun addLineFeedToBuffer(lineNumber: Int) {
+        for (i in 1..lineNumber) {
+            buffer.put(PR3Command.NEW_LINE)
+        }
+    }
+
     override fun giayBaoTienNuocNongThon(jsonData: ReadableMap) {
-        initPrinter()
+        addSeparateLineToBuffer()
 
-        buffer.put("---------------------------------------.\n".toByteArray())
-
-//        buffer.put(
-//            CommonHelper.wordWrapStr(
-//                "Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n",
-//                printerPageWidth
-//            ).toByteArray()
-//        )
-
-        buffer.put(PR3Command.BOLD_ON)
-        buffer.put("Dòng chữ đậm\n".toByteArray())
-        buffer.put(PR3Command.BOLD_OFF)
-
-        buffer.put(PR3Command.DOUBLE_WIDE_ON)
-        buffer.put("Dòng chữ gấp đôi chiều rộng\n".toByteArray())
-        buffer.put(PR3Command.DOUBLE_WIDE_OFF)
-
-        buffer.put(PR3Command.DOUBLE_HIGH_ON)
-        buffer.put("Dòng chữ gấp đôi chiều cao\n".toByteArray())
-        buffer.put(PR3Command.DOUBLE_HIGH_OFF)
-
-        buffer.put(PR3Command.DOUBLE_WH_ON)
-        buffer.put("Dòng chữ gấp đôi chiều cao và chiều rộng\n".toByteArray())
-        buffer.put(PR3Command.DOUBLE_WH_OFF)
-
-        buffer.put("Dòng chữ bình thường\n".toByteArray())
-
-        addImageToBuffer("ma_qr.png")
-
-        buffer.put("---------------------------------------.\n".toByteArray())
+        buffer.put(
+            CommonHelper.createWrappedString(
+                "Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n",
+                printerPageWidth
+            ).toByteArray()
+        )
+//
+//        buffer.put(PR3Command.BOLD_ON)
+//        buffer.put("Dòng chữ đậm\n".toByteArray())
+//        buffer.put(PR3Command.BOLD_OFF)
+//
+//        buffer.put(PR3Command.DOUBLE_WIDE_ON)
+//        buffer.put("Dòng chữ gấp đôi chiều rộng\n".toByteArray())
+//        buffer.put(PR3Command.DOUBLE_WIDE_OFF)
+//
+//        buffer.put(PR3Command.DOUBLE_HIGH_ON)
+//        buffer.put("Dòng chữ gấp đôi chiều cao\n".toByteArray())
+//        buffer.put(PR3Command.DOUBLE_HIGH_OFF)
+//
+//        buffer.put(PR3Command.DOUBLE_WH_ON)
+//        buffer.put("Dòng chữ gấp đôi chiều cao và chiều rộng\n".toByteArray())
+//        buffer.put(PR3Command.DOUBLE_WH_OFF)
+//
+//        buffer.put("Dòng chữ bình thường\n".toByteArray())
+//
+//        addBitmapToBuffer("ma_qr.png")
+//
+        addSeparateLineToBuffer()
 
         buffer.put(PR3Command.NEW_LINE)
         buffer.put(PR3Command.NEW_LINE)
