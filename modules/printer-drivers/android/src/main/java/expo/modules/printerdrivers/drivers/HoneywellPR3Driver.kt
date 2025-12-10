@@ -21,14 +21,45 @@ class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
     override var driverName = "HoneywellPR3Driver"
     override var printerPageWidth: Int = 53
     override var separateLineLength: Int = 72
-    var imageHeadWidth: Int = 576
+    var imageHeadWidth: Int = 576 // in dots
 
     override fun initPrinter() {
-        // buffer.put(PR3Command.INIT)
+        buffer.put(PR3Command.INIT)
+    }
+
+    private fun wrapTextToWidth(text: String, paint: Paint, maxWidth: Float): List<String> {
+        val lines = mutableListOf<String>()
+        val words = text.split(" ")
+        var currentLine = StringBuilder()
+
+        for (word in words) {
+            val testLine = if (currentLine.isEmpty()) word else "$currentLine $word"
+            val testWidth = paint.measureText(testLine)
+
+            if (testWidth <= maxWidth) {
+                currentLine = StringBuilder(testLine)
+            } else {
+                // Current line is full, save it and start new line
+                if (currentLine.isNotEmpty()) {
+                    lines.add(currentLine.toString())
+                    currentLine = StringBuilder(word)
+                } else {
+                    // Single word is too long, need to break it
+                    lines.add(word)
+                }
+            }
+        }
+
+        // Add the last line
+        if (currentLine.isNotEmpty()) {
+            lines.add(currentLine.toString())
+        }
+
+        return lines
     }
 
     private fun createTextBitmap(
-        text: String, align: Int, bold: Boolean, doubleFontSize: Boolean
+        text: String, align: Int, bold: Boolean, doubleFontSize: Boolean,
     ): Bitmap {
         // Configure paint
         val paint = Paint().apply {
@@ -38,26 +69,40 @@ class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
             typeface = if (bold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
         }
 
-        // Measure text
-        val textWidth = paint.measureText(text)
-        val textHeight = paint.fontMetrics.let { it.descent - it.ascent }
+        // Measure text metrics
+        val fontMetrics = paint.fontMetrics
+        val lineHeight = (fontMetrics.descent - fontMetrics.ascent).toInt()
+        val textPadding = 4f
+
+        // Calculate available width for text (with margins)
+        val availableWidth = imageHeadWidth - (textPadding * 2)
+
+        // Wrap text into multiple lines that fit within available width
+        val wrappedLines = wrapTextToWidth(text, paint, availableWidth)
+
+        // Calculate total bitmap height
+        val totalHeight = (lineHeight * wrappedLines.size) + 8 // 4px padding top and bottom
 
         // Create bitmap
-        val bitmap = createBitmap(imageHeadWidth, textHeight.toInt() + 4)
-
+        val bitmap = createBitmap(imageHeadWidth, totalHeight)
         val canvas = Canvas(bitmap)
         canvas.drawColor(Color.WHITE)
 
-        // Calculate x position based on alignment
-        val x = when (align) {
-            WoosimCmd.ALIGN_CENTER -> (imageHeadWidth - textWidth) / 2
-            WoosimCmd.ALIGN_RIGHT -> imageHeadWidth - textWidth - 4f
-            else -> 4f // Left with small margin
-        }
+        // Draw each line
+        var currentY = -fontMetrics.ascent + 4f // Start position with top padding
+        for (line in wrappedLines) {
+            val lineWidth = paint.measureText(line)
 
-        // Draw text
-        val y = -paint.fontMetrics.ascent + 2f // Baseline position
-        canvas.drawText(text, x, y, paint)
+            // Calculate x position based on alignment
+            val x = when (align) {
+                WoosimCmd.ALIGN_CENTER -> (imageHeadWidth - lineWidth) / 2
+                WoosimCmd.ALIGN_RIGHT -> imageHeadWidth - lineWidth - textPadding
+                else -> textPadding // Left with margin
+            }
+
+            canvas.drawText(line, x, currentY, paint)
+            currentY += lineHeight
+        }
 
         return bitmap
     }
@@ -88,7 +133,6 @@ class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
             if (imageFile.exists()) {
                 val bitmap = BitmapFactory.decodeFile(qrImagePath)
                 if (bitmap != null) {
-                    // PR3 print head width is 576 dots
                     docLP.writeImage(bitmap, imageHeadWidth)
                     bitmap.recycle()
                 } else {
@@ -138,6 +182,24 @@ class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
         )
         addAlignedStringToBuffer(
             "The quick brown fox jumps over the lazy dog.\n",
+            WoosimCmd.ALIGN_RIGHT,
+            bold = true,
+            doubleFontSize = true,
+        )
+
+        addAlignedStringToBuffer("Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n")
+        addAlignedStringToBuffer(
+            "Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n",
+            WoosimCmd.ALIGN_CENTER,
+            true,
+        )
+        addAlignedStringToBuffer(
+            "Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n",
+            WoosimCmd.ALIGN_RIGHT,
+            doubleFontSize = true
+        )
+        addAlignedStringToBuffer(
+            "Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n",
             WoosimCmd.ALIGN_RIGHT,
             bold = true,
             doubleFontSize = true,

@@ -64,10 +64,12 @@ object CommonHelper {
         when (align) {
             WoosimCmd.ALIGN_LEFT
                 -> result = ""
+
             WoosimCmd.ALIGN_CENTER
                 -> result = " ".repeat((wrappedLength - source.length) / 2)
+
             WoosimCmd.ALIGN_RIGHT
-                -> result =  " ".repeat(wrappedLength - source.length)
+                -> result = " ".repeat(wrappedLength - source.length)
         }
         return result
     }
