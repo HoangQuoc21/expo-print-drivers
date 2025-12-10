@@ -39,6 +39,6 @@ abstract class BaseDriver(
         doubleFontSize: Boolean = false
     )
     abstract fun addBitmapToBuffer(fileName: String)
-    abstract fun addLineFeedToBuffer(lineNumber: Int = 1)
+    abstract fun addLineFeedsToBuffer(lineNumber: Int = 1)
     abstract fun giayBaoTienNuocNongThon(jsonData: ReadableMap)
 }

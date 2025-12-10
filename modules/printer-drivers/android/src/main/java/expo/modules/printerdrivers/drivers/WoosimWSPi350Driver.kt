@@ -60,7 +60,7 @@ class WoosimWSPi350Driver(
         )
     }
 
-    override fun addLineFeedToBuffer(lineNumber: Int) {
+    override fun addLineFeedsToBuffer(lineNumber: Int) {
         buffer.put(WoosimHelper.addLineFeed(lineNumber))
     }
 
@@ -181,6 +181,6 @@ class WoosimWSPi350Driver(
         addAlignedStringToBuffer("Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n")
         addSeparateLineToBuffer()
 
-        addLineFeedToBuffer(3)
+        addLineFeedsToBuffer(3)
     }
 }

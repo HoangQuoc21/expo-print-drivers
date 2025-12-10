@@ -11,7 +11,6 @@ import com.facebook.react.bridge.ReadableMap
 import com.woosim.printer.WoosimCmd
 import expo.modules.printerdrivers.services.bluetooth.BluetoothService
 import expo.modules.printerdrivers.utils.constants.PR3Command
-import expo.modules.printerdrivers.utils.helpers.CommonHelper
 import honeywell.printer.DocumentLP
 import java.io.File
 import androidx.core.graphics.createBitmap
@@ -149,25 +148,14 @@ class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
         buffer.put(docLP.documentData)
     }
 
-    override fun addLineFeedToBuffer(lineNumber: Int) {
+    override fun addLineFeedsToBuffer(lineNumber: Int) {
         for (i in 1..lineNumber) {
             buffer.put(PR3Command.NEW_LINE)
         }
     }
 
     override fun giayBaoTienNuocNongThon(jsonData: ReadableMap) {
-
-//        addSeparateLineToBuffer()
-//        addAlignedStringToBuffer("Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n")
-//        addAlignedStringToBuffer(
-//            "Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n",
-//            WoosimCmd.ALIGN_CENTER
-//        )
-//        addAlignedStringToBuffer(
-//            "Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n",
-//            WoosimCmd.ALIGN_RIGHT
-//        )
-        // addSeparateLineToBuffer()
+        addSeparateLineToBuffer()
 
         addAlignedStringToBuffer("The quick brown fox jumps over the lazy dog.\n")
         addAlignedStringToBuffer(
@@ -205,28 +193,10 @@ class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
             doubleFontSize = true,
         )
 
-//        buffer.put(PR3Command.BOLD_ON)
-//        buffer.put("Dòng chữ đậm\n".toByteArray())
-//        buffer.put(PR3Command.BOLD_OFF)
-//
-//        buffer.put(PR3Command.DOUBLE_WIDE_ON)
-//        buffer.put("Dòng chữ gấp đôi chiều rộng\n".toByteArray())
-//        buffer.put(PR3Command.DOUBLE_WIDE_OFF)
-//
-//        buffer.put(PR3Command.DOUBLE_HIGH_ON)
-//        buffer.put("Dòng chữ gấp đôi chiều cao\n".toByteArray())
-//        buffer.put(PR3Command.DOUBLE_HIGH_OFF)
-//
-//        buffer.put(PR3Command.DOUBLE_WH_ON)
-//        buffer.put("Dòng chữ gấp đôi chiều cao và chiều rộng\n".toByteArray())
-//        buffer.put(PR3Command.DOUBLE_WH_OFF)
-//
-//        buffer.put("Dòng chữ bình thường\n".toByteArray())
-//
 //        addBitmapToBuffer("ma_qr.png")
 
         addSeparateLineToBuffer()
 
-        addLineFeedToBuffer(2)
+        addLineFeedsToBuffer(2)
     }
 }

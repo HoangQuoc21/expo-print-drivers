@@ -28,7 +28,7 @@ class Honeywell0188Driver(bluetoothService: BluetoothService, context: Context) 
         TODO("Not yet implemented")
     }
 
-    override fun addLineFeedToBuffer(lineNumber: Int) {
+    override fun addLineFeedsToBuffer(lineNumber: Int) {
         TODO("Not yet implemented")
     }
 
