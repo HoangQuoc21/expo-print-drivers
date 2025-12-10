@@ -25,11 +25,25 @@ const MA_QR =
   "https://drive.google.com/uc?export=download&id=1zJtXeNPdzZHqr6rzdoBXekNdk9pDfThj";
 
 const testPrinterData = {
-  name: "Nguyen Van A",
-  address: "123 Le Loi, District 1, HCM City",
-  money: 150000,
-  isMale: true,
-  hobbies: ["reading", "traveling", "swimming"],
+  tenCongTy: "CTY CỔ PHẨN CẤP NƯỚC CẤP CẤP",
+  tenPhieu: "PHIẾU BÁO CHỈ SỐ ĐOM ĐÓM",
+  ky: "12/2025",
+  tuNgay: "04/11/2025",
+  denNgay: "04/12/2025",
+  mdb: "0123456789",
+  mlt: "0123456789",
+  khachHang: "NGUYỄN VĂN A",
+  soDienThoai: "0123456789",
+  diaChi:
+    "123 Đường Đi Hoài Sẽ Thấy, Phường Biết Tới, Quận Rõ Ràng, TP Hiểu Rồi",
+  giaBieu: "21",
+  dinhMuc: "69",
+  chiSo: "1600",
+  tienNuoc: "3000",
+  tienKyMoi: "2169",
+  nhanVien: "Trần Văn A",
+  dienThoaiNhanVien: "0987654321",
+  maQR: "ma_qr.png",
 };
 
 export default function App() {

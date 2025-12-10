@@ -1,5 +1,7 @@
 package expo.modules.printerdrivers.utils.helpers
 
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
 import com.woosim.printer.WoosimCmd
 import java.nio.ByteBuffer
 
@@ -79,5 +81,34 @@ object CommonHelper {
         buffer.flip()
         buffer.get(result)
         return result
+    }
+
+    private fun checkNullEmptyBlank(strToCheck: String, replaceText: String?): String {
+        val replacement = replaceText ?: ""
+        return if (strToCheck.isEmpty() || strToCheck.isBlank()) replacement else strToCheck
+    }
+
+    fun getStringValueByKey(readableMap: ReadableMap, key: String?, replaceValue: String? = null): String {
+        val replacement = replaceValue ?: ""
+        if (key != null && readableMap.hasKey(key)) {
+            return when (readableMap.getType(key)) {
+                ReadableType.Number -> {
+                    val tmp = readableMap.getDouble(key)
+                    if (tmp == tmp.toInt().toDouble()) {
+                        checkNullEmptyBlank(tmp.toInt().toString(), replacement)
+                    } else {
+                        checkNullEmptyBlank(tmp.toString(), replacement)
+                    }
+                }
+
+                ReadableType.String -> checkNullEmptyBlank(
+                    readableMap.getString(key)!!,
+                    replacement
+                )
+
+                else -> replacement
+            }
+        }
+        return replacement
     }
 }
