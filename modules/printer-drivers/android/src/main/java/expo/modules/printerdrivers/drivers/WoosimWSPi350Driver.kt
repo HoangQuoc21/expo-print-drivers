@@ -3,7 +3,7 @@ package expo.modules.printerdrivers.drivers
 import android.content.Context
 import com.facebook.react.bridge.ReadableMap
 import com.woosim.printer.WoosimCmd
-import expo.modules.printerdrivers.bluetoothService.BluetoothService
+import expo.modules.printerdrivers.services.bluetooth.BluetoothService
 import expo.modules.printerdrivers.utils.helpers.CommonHelper
 import expo.modules.printerdrivers.utils.helpers.DateHelper
 import expo.modules.printerdrivers.utils.helpers.WoosimHelper

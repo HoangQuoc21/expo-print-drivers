@@ -9,13 +9,13 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.printerdrivers.bluetoothService.BluetoothEventHandler
-import expo.modules.printerdrivers.bluetoothService.BluetoothService
+import expo.modules.printerdrivers.services.bluetooth.BluetoothEventHandler
+import expo.modules.printerdrivers.services.bluetooth.BluetoothService
 import expo.modules.printerdrivers.drivers.WoosimWSPi350Driver
 import expo.modules.printerdrivers.drivers.Honeywell0188Driver
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.printerdrivers.bluetoothService.BluetoothConnectionState
+import expo.modules.printerdrivers.services.bluetooth.BluetoothConnectionState
 import expo.modules.printerdrivers.drivers.BaseDriver
 import expo.modules.printerdrivers.drivers.HoneywellPR3Driver
 import expo.modules.printerdrivers.utils.constants.PrinterType

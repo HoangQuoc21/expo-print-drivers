@@ -1,4 +1,4 @@
-package expo.modules.printerdrivers.bluetoothService
+package expo.modules.printerdrivers.services.bluetooth
 
 /**
  * Interface for handling Bluetooth events.

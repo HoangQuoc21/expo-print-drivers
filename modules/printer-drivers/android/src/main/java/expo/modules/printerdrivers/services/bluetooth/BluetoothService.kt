@@ -1,4 +1,4 @@
-package expo.modules.printerdrivers.bluetoothService
+package expo.modules.printerdrivers.services.bluetooth
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter

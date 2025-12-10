@@ -1,4 +1,4 @@
-package expo.modules.printerdrivers.bluetoothService
+package expo.modules.printerdrivers.services.bluetooth
 
 /**
  * Constants that indicate the current bluetooth connection state

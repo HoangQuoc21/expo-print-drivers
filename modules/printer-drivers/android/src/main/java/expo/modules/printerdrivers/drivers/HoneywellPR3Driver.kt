@@ -4,9 +4,11 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import com.facebook.react.bridge.ReadableMap
 import com.woosim.printer.WoosimCmd
-import expo.modules.printerdrivers.bluetoothService.BluetoothService
+import expo.modules.printerdrivers.services.bluetooth.BluetoothService
 import expo.modules.printerdrivers.utils.constants.PR3Command
 import expo.modules.printerdrivers.utils.helpers.CommonHelper
+import honeywell.printer.DocumentFP
+import honeywell.printer.ParametersFP
 import honeywell.printer.DocumentLP
 import java.io.File
 
@@ -23,15 +25,34 @@ class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
     override fun addAlignedStringToBuffer(
         string: String, align: Int, bold: Boolean, doubleFontSize: Boolean
     ) {
-        val wrappedStrings = CommonHelper.createWrappedStringArray(string, printerPageWidth)
+        val doc = DocumentFP()
+        val params = ParametersFP()
 
-        for (string in wrappedStrings) {
-            println(string.length)
-            println("'${string}'")
-            val addingPadding = CommonHelper.createStringPadding(string, printerPageWidth, align)
-            println(addingPadding.length)
-            buffer.put("$addingPadding$string".toByteArray())
+        // Set formatting parameters
+        params.isBold = bold
+        if (doubleFontSize) {
+            params.setHorizontalMultiplier(2)
+            params.setVerticalMultiplier(2)
         }
+
+        // Set alignment based on input
+        params.alignment = when (align) {
+            WoosimCmd.ALIGN_CENTER -> ParametersFP.Alignment.Top_Center
+            WoosimCmd.ALIGN_RIGHT -> ParametersFP.Alignment.Top_Right
+            else -> ParametersFP.Alignment.Top_Left
+        }
+
+        val wrappedStrings = CommonHelper.createWrappedStringArray(string, printerPageWidth)
+        var currentRow = 0
+
+        for (wrappedString in wrappedStrings) {
+            // DocumentFP uses row/column positioning (0-based)
+            // Write text at row position with alignment handled by ParametersFP
+            doc.writeText(wrappedString.trimEnd('\n'), currentRow, 0, params)
+            currentRow += if (doubleFontSize) 2 else 1
+        }
+
+        buffer.put(doc.documentData)
     }
 
     override fun addBitmapToBuffer(fileName: String) {
@@ -69,14 +90,24 @@ class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
 
     override fun giayBaoTienNuocNongThon(jsonData: ReadableMap) {
 
+//        addSeparateLineToBuffer()
+//        addAlignedStringToBuffer("Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n")
+//        addAlignedStringToBuffer(
+//            "Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n",
+//            WoosimCmd.ALIGN_CENTER
+//        )
+//        addAlignedStringToBuffer(
+//            "Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n",
+//            WoosimCmd.ALIGN_RIGHT
+//        )
         addSeparateLineToBuffer()
-        addAlignedStringToBuffer("Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n")
+        addAlignedStringToBuffer("Ga voi va buoc nhanh qua pho xa, duoi bong troi cho no nhung giac mo.\n")
         addAlignedStringToBuffer(
-            "Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n",
+            "Ga voi va buoc nhanh qua pho xa, duoi bong troi cho no nhung giac mo.\n",
             WoosimCmd.ALIGN_CENTER
         )
         addAlignedStringToBuffer(
-            "Gã vội vã bước nhanh qua phố xá, dưới bóng trời chớm nở những giấc mơ.\n",
+            "Ga voi va buoc nhanh qua pho xa, duoi bong troi cho no nhung giac mo.\n",
             WoosimCmd.ALIGN_RIGHT
         )
 //
