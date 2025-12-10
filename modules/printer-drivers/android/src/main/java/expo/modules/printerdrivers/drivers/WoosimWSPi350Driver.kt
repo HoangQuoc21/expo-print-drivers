@@ -72,6 +72,21 @@ class WoosimWSPi350Driver(
         }
     }
 
+    override fun addTwoAlignedStringsToBuffer(
+        leftString: String,
+        rightString: String,
+        leftBold: Boolean,
+        rightBold: Boolean,
+        leftDoubleHeight: Boolean,
+        rightDoubleHeight: Boolean
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override fun addSeparateLineToBuffer() {
+        buffer.put(CommonHelper.createSeparatorLine(separateLineLength))
+    }
+
     override fun giayBaoTienNuocNongThon(jsonData: ReadableMap) {
         val currentDate = DateHelper.formatDate(Date())
         val kyNam = "04/2024"

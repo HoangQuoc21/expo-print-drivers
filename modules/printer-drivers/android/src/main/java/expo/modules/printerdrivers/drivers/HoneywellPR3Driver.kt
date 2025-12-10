@@ -19,8 +19,8 @@ import expo.modules.printerdrivers.utils.constants.PrinterCharacter
 class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
     BaseDriver(bluetoothService, context) {
     override var driverName = "HoneywellPR3Driver"
-    override var printerPageWidth: Int = 53
-    override var separateLineLength: Int = 71
+    override var printerPageWidth: Int = 44
+    override var separateLineLength: Int = 44
     var imageHeadWidth: Int = 576 // in dots
 
     override fun initPrinter() {
@@ -177,16 +177,97 @@ class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
         }
     }
 
+    override fun addTwoAlignedStringsToBuffer(
+        leftString: String,
+        rightString: String,
+        leftBold: Boolean,
+        rightBold: Boolean,
+        leftDoubleHeight: Boolean,
+        rightDoubleHeight: Boolean,
+    ) {
+        val leftText = leftString.trimEnd('\n')
+        val rightText = rightString.trimEnd('\n')
+
+        if (leftText.isEmpty() && rightText.isEmpty()) return
+
+        // Create a combined bitmap with both texts
+        val bitmap = createTwoAlignedTextBitmap(
+            leftText, rightText, leftBold, rightBold, leftDoubleHeight, rightDoubleHeight
+        )
+
+        val docLP = DocumentLP("!")
+        docLP.writeImage(bitmap, imageHeadWidth)
+        buffer.put(docLP.documentData)
+
+        bitmap.recycle()
+    }
+
+    private fun createTwoAlignedTextBitmap(
+        leftText: String,
+        rightText: String,
+        leftBold: Boolean,
+        rightBold: Boolean,
+        leftDoubleSize: Boolean,
+        rightDoubleSize: Boolean
+    ): Bitmap {
+        // Configure paints for left and right text
+        val leftPaint = Paint().apply {
+            color = Color.BLACK
+            isAntiAlias = false
+            textSize = if (leftDoubleSize) 32f else 24f
+            typeface = if (leftBold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+        }
+
+        val rightPaint = Paint().apply {
+            color = Color.BLACK
+            isAntiAlias = false
+            textSize = if (rightDoubleSize) 32f else 24f
+            typeface = if (rightBold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+        }
+
+        // Calculate heights
+        val leftHeight = leftPaint.fontMetrics.let { it.descent - it.ascent }
+        val rightHeight = rightPaint.fontMetrics.let { it.descent - it.ascent }
+        val maxHeight = maxOf(leftHeight, rightHeight).toInt() + 8
+
+        val textPadding = 4f
+
+        // Create bitmap
+        val bitmap = createBitmap(imageHeadWidth, maxHeight)
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(Color.WHITE)
+
+        // Draw left text
+        if (leftText.isNotEmpty()) {
+            val leftY = -leftPaint.fontMetrics.ascent + 4f
+            canvas.drawText(leftText, textPadding, leftY, leftPaint)
+        }
+
+        // Draw right text
+        if (rightText.isNotEmpty()) {
+            val rightWidth = rightPaint.measureText(rightText)
+            val rightX = imageHeadWidth - rightWidth - textPadding
+            val rightY = -rightPaint.fontMetrics.ascent + 4f
+            canvas.drawText(rightText, rightX, rightY, rightPaint)
+        }
+
+        return bitmap
+    }
+
+    override fun addSeparateLineToBuffer() {
+        addAlignedStringToBuffer("-".repeat(separateLineLength), WoosimCmd.ALIGN_CENTER)
+    }
+
     override fun giayBaoTienNuocNongThon(jsonData: ReadableMap) {
-//        addSeparateLineToBuffer()
-//        addAlignedStringToBuffer(
-//            "CTY CỔ PHẦN CẤP NƯỚC CẤP CẤP", WoosimCmd.ALIGN_CENTER, bold = true
-//        )
-//        addSeparateLineToBuffer()
-//        addAlignedStringToBuffer(
-//            "PHIẾU BÁO CHỈ SỐ ĐO", WoosimCmd.ALIGN_CENTER, bold = true, doubleFontSize = true
-//        )
-//        addAlignedStringToBuffer("KỲ 12/2025", WoosimCmd.ALIGN_CENTER, bold = true)
+        addSeparateLineToBuffer()
+        addAlignedStringToBuffer(
+            "CTY CỔ PHẦN CẤP NƯỚC CẤP CẤP", WoosimCmd.ALIGN_CENTER, bold = true
+        )
+        addSeparateLineToBuffer()
+        addAlignedStringToBuffer(
+            "PHIẾU BÁO CHỈ SỐ ĐOM ĐÓM", WoosimCmd.ALIGN_CENTER, bold = true, doubleFontSize = true
+        )
+        addAlignedStringToBuffer("KỲ 12/2025", WoosimCmd.ALIGN_CENTER, bold = true)
         addAlignedStringToBuffer("04/11/2025 - 04/12/2025", WoosimCmd.ALIGN_CENTER)
         addAlignedStringToBuffer("DB: 0123456789 - MLT: 01234567", bold = true)
         addAlignedStringToBuffer("KH: NGUYEN VAN A", bold = true)
@@ -198,11 +279,28 @@ class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
             rightString = "1600 ${PrinterCharacter.M3}",
             rightBold = true
         )
-        addAlignedStringToBuffer(
-            "Quét mã QR . để thanh toán MOMO", WoosimCmd.ALIGN_CENTER, bold = true
+        addTwoAlignedStringsToBuffer(
+            leftString = "Tiền hehe", rightString = "3000 ${PrinterCharacter.VND}", rightBold = true
         )
-//        addLineFeedsToBuffer()
-//        addBitmapToBuffer("ma_qr.png", WoosimCmd.ALIGN_CENTER)
-        addLineFeedsToBuffer(3)
+        addAlignedStringToBuffer("-".repeat(10), WoosimCmd.ALIGN_RIGHT)
+        addTwoAlignedStringsToBuffer(
+            leftString = "Số tiền (kỳ mới)",
+            rightString = "2169 ${PrinterCharacter.VND}",
+            rightBold = true
+        )
+        addSeparateLineToBuffer()
+        addAlignedStringToBuffer("NV: Trần Văn A", bold = true)
+        addAlignedStringToBuffer("ĐT: 0987654321", bold = true)
+        addAlignedStringToBuffer("Sau 3 ngày làm việc, kể từ ngày ghi chỉ số nước, dữ liệu hoá đơn sẽ được cập nhật tại website:")
+        addAlignedStringToBuffer("https://www.example.com", bold = true)
+        addAlignedStringToBuffer("Quý khách vui lòng kiểm tra lại số điện thoại trên phiếu báo này và liên hệ đội làm giàu:")
+        addAlignedStringToBuffer("(0123) 456789 để cập nhật lại nếu chưa chính xác.")
+        addAlignedStringToBuffer(
+            "Quét mã QR để thanh toán MOMO", WoosimCmd.ALIGN_CENTER, bold = true
+        )
+        addLineFeedsToBuffer()
+        addBitmapToBuffer("ma_qr.png", WoosimCmd.ALIGN_CENTER)
+
+        addLineFeedsToBuffer(2)
     }
 }

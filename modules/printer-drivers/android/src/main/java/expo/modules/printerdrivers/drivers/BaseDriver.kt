@@ -28,9 +28,7 @@ abstract class BaseDriver(
         bluetoothService.write(data)
     }
 
-    fun addSeparateLineToBuffer() {
-        buffer.put(CommonHelper.createSeparatorLine(separateLineLength))
-    }
+    abstract fun addSeparateLineToBuffer()
 
     abstract fun initPrinter()
     abstract fun addAlignedStringToBuffer(
@@ -39,23 +37,14 @@ abstract class BaseDriver(
         bold: Boolean = false,
         doubleFontSize: Boolean = false
     )
-
-    fun addTwoAlignedStringsToBuffer(
+    abstract fun addTwoAlignedStringsToBuffer(
         leftString: String,
         rightString: String,
         leftBold: Boolean = false,
         rightBold: Boolean = false,
         leftDoubleHeight: Boolean = false,
         rightDoubleHeight: Boolean = false,
-    ) {
-        addAlignedStringToBuffer(
-            leftString, bold = leftBold, doubleFontSize = leftDoubleHeight
-        )
-        addAlignedStringToBuffer(
-            rightString, WoosimCmd.ALIGN_RIGHT, bold = rightBold, doubleFontSize = rightDoubleHeight
-        )
-    }
-
+    )
     abstract fun addBitmapToBuffer(fileName: String, align: Int = WoosimCmd.ALIGN_LEFT)
     abstract fun addLineFeedsToBuffer(lineNumber: Int = 1)
     abstract fun giayBaoTienNuocNongThon(jsonData: ReadableMap)

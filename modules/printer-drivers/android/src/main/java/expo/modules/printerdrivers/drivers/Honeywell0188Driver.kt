@@ -32,6 +32,21 @@ class Honeywell0188Driver(bluetoothService: BluetoothService, context: Context) 
         TODO("Not yet implemented")
     }
 
+    override fun addTwoAlignedStringsToBuffer(
+        leftString: String,
+        rightString: String,
+        leftBold: Boolean,
+        rightBold: Boolean,
+        leftDoubleHeight: Boolean,
+        rightDoubleHeight: Boolean
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override fun addSeparateLineToBuffer() {
+        TODO("Not yet implemented")
+    }
+
     override fun giayBaoTienNuocNongThon(jsonData: ReadableMap) {
         Log.d(driverName, "--> giayBaoTienNuocGiaDinhVer1: $jsonData")
     }
