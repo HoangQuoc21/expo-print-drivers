@@ -17,7 +17,7 @@ import {
   TicketPrinter,
 } from "../modules/printer-drivers";
 import { styles, colors } from "./App.styles";
-import { isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { FileHelper } from "./utils/helpers";
 import PrinterDriversModule from "../modules/printer-drivers/src/PrinterDriversModule";
 
@@ -145,7 +145,7 @@ export default function App() {
     }
 
     if (usingDriver) {
-      TicketPrinter.giayBaoTienNuocNongThon(usingDriver, testPrinterData);
+      TicketPrinter.testGiayBaoTienNuoc(usingDriver, testPrinterData);
     } else {
       Alert.alert(
         "Printing Error",
@@ -292,7 +292,7 @@ export default function App() {
   };
 
   const renderDeviceList = () => {
-    if (!isAvailable || !isEnabled) {
+    if (!isAvailable || !isEnabled || isEmpty(devices)) {
       return <Text style={styles.emptyText}>No devices found</Text>;
     }
 
