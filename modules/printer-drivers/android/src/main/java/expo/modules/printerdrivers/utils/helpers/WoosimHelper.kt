@@ -188,8 +188,4 @@ object WoosimHelper {
 
         return CommonHelper.convertBufferToByteArray(buffer)
     }
-
-    fun addLineFeed(lines: Int = 1): ByteArray {
-        return WoosimCmd.printLineFeed(lines)
-    }
 }

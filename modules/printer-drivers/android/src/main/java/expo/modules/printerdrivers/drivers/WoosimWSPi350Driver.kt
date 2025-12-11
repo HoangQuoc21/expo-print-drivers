@@ -66,7 +66,7 @@ class WoosimWSPi350Driver(
     }
 
     override fun addLineFeedsToBuffer(lineNumber: Int) {
-        buffer.put(WoosimHelper.addLineFeed(lineNumber))
+        buffer.put(WoosimCmd.printLineFeed(lineNumber))
     }
 
     override fun addBitmapToBuffer(fileName: String, align: Int) {
