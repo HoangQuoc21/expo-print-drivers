@@ -211,15 +211,15 @@ class PrinterDriversModule : Module() {
             usingDriver.sendPrintData()
         }
 
-        Function("giayBaoTienNuocNongThon") { printerType: String, jsonData: ReadableMap ->
+        Function("testGiayBaoTienNuoc") { printerType: String, jsonData: ReadableMap ->
             try {
                 val usingDriver = getDriver(printerType)
                 printHandler(
                     usingDriver = usingDriver,
-                    printFunction = { usingDriver.giayBaoTienNuocNongThon(jsonData) }
+                    printFunction = { usingDriver.testGiayBaoTienNuoc(jsonData) }
                 )
             } catch (err: Error) {
-                Log.e(TAG, "--> Error in giayBaoTienNuocNongThon: $err")
+                Log.e(TAG, "--> Error in testGiayBaoTienNuoc: $err")
             }
         }
     }
