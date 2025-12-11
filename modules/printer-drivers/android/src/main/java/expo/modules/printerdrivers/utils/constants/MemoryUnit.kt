@@ -1,5 +1,5 @@
 package expo.modules.printerdrivers.utils.constants
 
 object MemoryUnit {
-    val KiB = 1024
+    const val KB = 1024
 }

@@ -1,10 +1,10 @@
 package expo.modules.printerdrivers.utils.constants
 
 object PR3Command {
-    private val ESC = 0x1b.toByte() // ESC
-    private val EM = 0x21.toByte() // ! (Exclamation Mark)
-    private val NLL = 0x00.toByte() // NULL
-    private val CR = 0x0d.toByte() // Carriage Return
+    private const val ESC = 0x1b.toByte() // ESC
+    private const val EM = 0x21.toByte() // ! (Exclamation Mark)
+    private const val NLL = 0x00.toByte() // NULL
+    private const val CR = 0x0d.toByte() // Carriage Return
     
     val INIT = byteArrayOf(
         NLL, NLL, NLL, NLL,
