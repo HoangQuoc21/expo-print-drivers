@@ -132,6 +132,44 @@ class Honeywell0188Driver(bluetoothService: BluetoothService, context: Context) 
         }
     }
 
+    override fun addTwoAlignedStringsToBuffer(
+        leftString: String,
+        rightString: String,
+        leftBold: Boolean,
+        rightBold: Boolean,
+        leftDoubleHeight: Boolean,
+        rightDoubleHeight: Boolean
+    ) {
+        try {
+            // Remove trailing newlines
+            val leftText = leftString.trimEnd('\n')
+            val rightText = rightString.trimEnd('\n')
+
+            // Calculate spacing manually
+            val totalLength = leftText.length + rightText.length
+            val spacesNeeded = (printerPageWidth - totalLength).coerceAtLeast(1)
+
+            // Format the line with spaces between left and right
+            val formattedLine = leftText + " ".repeat(spacesNeeded) + rightText
+
+            // Use combined styling (if either is bold/double, apply to whole line)
+            val useBold = leftBold || rightBold
+            val useDouble = leftDoubleHeight || rightDoubleHeight
+
+            val setting = TextSetting().apply {
+                escFontType = ESCFontTypeEnum.FONT_A_12x24
+                align = WoosimCmd.ALIGN_LEFT
+                bold = if (useBold) SettingEnum.Enable else SettingEnum.Disable
+                doubleHeight = if (useDouble) SettingEnum.Enable else SettingEnum.Disable
+                doubleWidth = if (useDouble) SettingEnum.Enable else SettingEnum.Disable
+            }
+
+            escCmd.append(escCmd.getTextCmd(setting, formattedLine))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     override fun clearBuffer() {
         escCmd.clear()
         super.clearBuffer()

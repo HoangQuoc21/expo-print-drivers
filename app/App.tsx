@@ -26,7 +26,7 @@ const MA_QR =
   "https://drive.google.com/uc?export=download&id=1zJtXeNPdzZHqr6rzdoBXekNdk9pDfThj";
 
 const testPrinterData = {
-  tenCongTy: "CTY CỔ PHẨN CẤP NƯỚC CẤP CẤP",
+  tenCongTy: "CTY CỔ PHẦN CẤP NƯỚC CẤP CẤP",
   tenPhieu: "PHIẾU BÁO CHỈ SỐ ĐOM ĐÓM",
   ky: "12/2025",
   tuNgay: "04/11/2025",
