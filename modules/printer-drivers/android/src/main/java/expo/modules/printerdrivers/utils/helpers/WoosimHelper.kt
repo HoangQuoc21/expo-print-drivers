@@ -125,7 +125,7 @@ object WoosimHelper {
         leftString: String,
         middleString: String,
         rightString: String,
-        len: Int,
+        pageLength: Int,
         leftBold: Boolean = false,
         middleBold: Boolean = false,
         rightBold: Boolean = false,
@@ -144,18 +144,23 @@ object WoosimHelper {
 
         try {
             val totalLen = left.length + middle.length + right.length
-            if (totalLen > len) {
+            if (totalLen > pageLength) {
                 // Overflow: wrap the combined text
-                val wrapped = CommonHelper.createWrappedString("$left $middle $right", len)
+                val wrapped = CommonHelper.createWrappedString("$left $middle $right", pageLength)
                 buffer.put(WoosimCmd.setTextAlign(WoosimCmd.ALIGN_LEFT))
                 buffer.put(wrapped.toByteArray(charset))
                 buffer.put(WoosimCmd.printLineFeed(0))
             } else {
-                // Calculate spaces
-                val sp = len / 2 + middle.length / 2 - (left.length + middle.length)
-                val sp1 = maxOf(1, sp)
-                val tempRe = (left + " ".repeat(sp1) + middle).trim { it <= ' ' }
-                val sp2 = maxOf(1, len - (tempRe.length + right.length))
+                // Calculate middle text starting position (centered in printer width)
+                val middleStartPos = (pageLength / 2 - middle.length / 2).coerceAtLeast(0)
+
+                // Calculate left spacing (from end of left text to start of middle text)
+                val sp1 = (middleStartPos - left.length).coerceAtLeast(1)
+
+                // Calculate right spacing (from end of middle text to start of right text)
+                val middleEndPos = middleStartPos + middle.length
+                val rightStartPos = pageLength - right.length
+                val sp2 = (rightStartPos - middleEndPos).coerceAtLeast(1)
 
                 val space1 = " ".repeat(sp1)
                 val space2 = " ".repeat(sp2)
@@ -180,7 +185,7 @@ object WoosimHelper {
 
                 // Right
                 if (allBold || rightBold) buffer.put(WoosimCmd.setBold(true))
-                buffer.put(right.ifBlank { " " }.toByteArray(charset))
+                buffer.put("$right\n".ifBlank { " " }.toByteArray(charset))
                 if (allBold || rightBold) buffer.put(WoosimCmd.setBold(false))
 
                 buffer.put(WoosimCmd.setTextAlign(WoosimCmd.ALIGN_LEFT))

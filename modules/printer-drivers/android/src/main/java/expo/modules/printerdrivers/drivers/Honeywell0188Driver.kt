@@ -22,7 +22,8 @@ import java.io.File
 class Honeywell0188Driver(bluetoothService: BluetoothService, context: Context) :
     BaseDriver(bluetoothService, context) {
     override var driverName: String = "Honeywell0188Driver"
-    override var printerPageWidth: Int = 48
+    override var printerPageWidth: Int = 46
+    override var separateLineLength: Int = printerPageWidth
 
     val escCmd: EscCmd = EscFactory().create()
     val commonSetting = CommonSetting()
@@ -65,7 +66,11 @@ class Honeywell0188Driver(bluetoothService: BluetoothService, context: Context) 
         doubleFontSize: Boolean
     ) {
         try {
-            val wrappedString = CommonHelper.createWrappedString(string, printerPageWidth)
+            var actualString = string
+            if(align == WoosimCmd.ALIGN_RIGHT){
+                actualString = actualString.trimEnd('\n') + "  \n"
+            }
+            val wrappedString = CommonHelper.createWrappedString(actualString, printerPageWidth)
 
             val setting = TextSetting().apply {
                 escFontType = ESCFontTypeEnum.FONT_A_12x24
@@ -141,20 +146,61 @@ class Honeywell0188Driver(bluetoothService: BluetoothService, context: Context) 
         rightDoubleHeight: Boolean
     ) {
         try {
-            // Remove trailing newlines
-            val leftText = leftString.trimEnd('\n')
-            val rightText = rightString.trimEnd('\n')
-
             // Calculate spacing manually
-            val totalLength = leftText.length + rightText.length
+            val totalLength = leftString.length + rightString.length
             val spacesNeeded = (printerPageWidth - totalLength).coerceAtLeast(1)
 
             // Format the line with spaces between left and right
-            val formattedLine = leftText + " ".repeat(spacesNeeded) + rightText
+            val formattedLine = leftString + " ".repeat(spacesNeeded) + rightString
 
             // Use combined styling (if either is bold/double, apply to whole line)
             val useBold = leftBold || rightBold
             val useDouble = leftDoubleHeight || rightDoubleHeight
+
+            val setting = TextSetting().apply {
+                escFontType = ESCFontTypeEnum.FONT_A_12x24
+                align = WoosimCmd.ALIGN_LEFT
+                bold = if (useBold) SettingEnum.Enable else SettingEnum.Disable
+                doubleHeight = if (useDouble) SettingEnum.Enable else SettingEnum.Disable
+                doubleWidth = if (useDouble) SettingEnum.Enable else SettingEnum.Disable
+            }
+
+            escCmd.append(escCmd.getTextCmd(setting, formattedLine))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun addThreeAlignedStringsToBuffer(
+        leftString: String,
+        middleString: String,
+        rightString: String,
+        leftBold: Boolean,
+        middleBold: Boolean,
+        rightBold: Boolean,
+        leftDoubleHeight: Boolean,
+        middleDoubleHeight: Boolean,
+        rightDoubleHeight: Boolean
+    ) {
+        try {
+            // Calculate middle text starting position (centered in printer width)
+            val middleStartPos = (printerPageWidth / 2 - middleString.length / 2).coerceAtLeast(0)
+
+            // Calculate left spacing (from end of left text to start of middle text)
+            val leftSpaces = (middleStartPos - leftString.length).coerceAtLeast(1)
+
+            // Calculate right spacing (from end of middle text to start of right text)
+            val middleEndPos = middleStartPos + middleString.length
+            val rightStartPos = printerPageWidth - rightString.length
+            val rightSpaces = (rightStartPos - middleEndPos).coerceAtLeast(1)
+
+            // Format the line with three columns
+            val formattedLine =
+                leftString + " ".repeat(leftSpaces) + middleString + " ".repeat(rightSpaces) + rightString
+
+            // Use combined styling (if any is bold/double, apply to whole line)
+            val useBold = leftBold || middleBold || rightBold
+            val useDouble = leftDoubleHeight || middleDoubleHeight || rightDoubleHeight
 
             val setting = TextSetting().apply {
                 escFontType = ESCFontTypeEnum.FONT_A_12x24

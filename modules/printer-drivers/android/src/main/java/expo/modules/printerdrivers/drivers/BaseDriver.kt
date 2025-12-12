@@ -15,6 +15,7 @@ abstract class BaseDriver(
     var buffer: ByteBuffer = ByteBuffer.allocate(50 * KB)
     abstract var driverName: String
     abstract var printerPageWidth: Int
+    abstract var separateLineLength: Int
 
     abstract fun initPrinter()
 
@@ -41,7 +42,7 @@ abstract class BaseDriver(
         addAlignedStringToBuffer(rightString, WoosimCmd.ALIGN_RIGHT, rightBold, rightDoubleHeight)
     }
 
-    open fun addThreeAlignedStringsToBuffer(
+    abstract fun addThreeAlignedStringsToBuffer(
         leftString: String,
         middleString: String,
         rightString: String,
@@ -51,16 +52,10 @@ abstract class BaseDriver(
         leftDoubleHeight: Boolean = false,
         middleDoubleHeight: Boolean = false,
         rightDoubleHeight: Boolean = false,
-    ) {
-        addAlignedStringToBuffer(leftString, WoosimCmd.ALIGN_LEFT, leftBold, leftDoubleHeight)
-        addAlignedStringToBuffer(
-            middleString, WoosimCmd.ALIGN_CENTER, middleBold, middleDoubleHeight
-        )
-        addAlignedStringToBuffer(rightString, WoosimCmd.ALIGN_RIGHT, rightBold, rightDoubleHeight)
-    }
+    )
 
     fun addSeparateLineToBuffer() {
-        addAlignedStringToBuffer("-".repeat(printerPageWidth), WoosimCmd.ALIGN_CENTER, true)
+        addAlignedStringToBuffer("${"-".repeat(separateLineLength)}\n", bold = true)
     }
 
     open fun clearBuffer() {
@@ -94,7 +89,12 @@ abstract class BaseDriver(
         val nhanVien = getStringValueByKey(jsonData, "nhanVien")
         val dienThoaiNhanVien = getStringValueByKey(jsonData, "dienThoaiNhanVien")
         val maQR = getStringValueByKey(jsonData, "maQR")
+        val chiSoMoi = getStringValueByKey(jsonData, "chiSoMoi")
+        val chiSoCu = getStringValueByKey(jsonData, "chiSoCu")
+        val tieuThu = getStringValueByKey(jsonData, "tieuThu")
+        val tongCong = getStringValueByKey(jsonData, "tongCong")
 
+        addAlignedStringToBuffer("$driverName\n", bold = true)
         addSeparateLineToBuffer()
         addAlignedStringToBuffer(
             "$tenCongTy\n", WoosimCmd.ALIGN_CENTER, bold = true
@@ -124,6 +124,24 @@ abstract class BaseDriver(
         addTwoAlignedStringsToBuffer(
             leftString = "Số tiền (kỳ mới)",
             rightString = "$tienKyMoi ${PrinterCharacter.VND}\n",
+            rightBold = true
+        )
+        addSeparateLineToBuffer()
+        addThreeAlignedStringsToBuffer(
+            "Chỉ số cũ", chiSoCu, "${PrinterCharacter.M3}\n", leftBold = true
+        )
+        addThreeAlignedStringsToBuffer(
+            "Chỉ số mới", chiSoMoi, "${PrinterCharacter.M3}\n", middleBold = true
+        )
+        addThreeAlignedStringsToBuffer(
+            "Tiêu thụ: ", tieuThu, "${PrinterCharacter.M3}\n", rightBold = true
+        )
+        addThreeAlignedStringsToBuffer(
+            "Tổng cộng: ",
+            tongCong,
+            "${PrinterCharacter.VND}\n",
+            leftBold = true,
+            middleBold = true,
             rightBold = true
         )
         addSeparateLineToBuffer()

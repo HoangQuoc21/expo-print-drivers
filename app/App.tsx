@@ -45,6 +45,10 @@ const testPrinterData = {
   nhanVien: "Trần Văn A",
   dienThoaiNhanVien: "0987654321",
   maQR: "ma_qr.png",
+  chiSoMoi: "1669",
+  chiSoCu: "1600",
+  tieuThu: "123",
+  tongCong: "456789",
 };
 
 export default function App() {

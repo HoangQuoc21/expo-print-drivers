@@ -10,7 +10,8 @@ class WoosimWSPi350Driver(
     bluetoothService: BluetoothService, context: Context
 ) : BaseDriver(bluetoothService, context) {
     override var driverName: String = "WoosimWSPi350Driver"
-    override var printerPageWidth: Int = 36
+    override var printerPageWidth: Int = 35
+    override var separateLineLength: Int = printerPageWidth
 
     override fun initPrinter() {
         buffer.put(WoosimCmd.initPrinter())
@@ -19,7 +20,11 @@ class WoosimWSPi350Driver(
     override fun addAlignedStringToBuffer(
         string: String, align: Int, bold: Boolean, doubleFontSize: Boolean
     ) {
-        val wrappedString = CommonHelper.createWrappedString(string, printerPageWidth)
+        var actualString = string
+        if(align == WoosimCmd.ALIGN_RIGHT){
+            actualString = actualString.trimEnd('\n') + " \n"
+        }
+        val wrappedString = CommonHelper.createWrappedString(actualString, printerPageWidth)
 
         buffer.put(
             WoosimHelper.addAlignedString(
@@ -28,28 +33,16 @@ class WoosimWSPi350Driver(
         )
     }
 
-    private fun addTwoMarginedStringsToBuffer(
-        str1: String, str2: String, bold: Boolean = false, doubleHeight: Boolean = false
-    ) {
-        buffer.put(
-            WoosimHelper.addTwoMarginedStrings(
-                str1,
-                str2,
-                bold,
-                doubleHeight,
-                printerPageWidth
-            )
-        )
-    }
-
-    private fun addThreeMarginedStringsToBuffer(
+    override fun addThreeAlignedStringsToBuffer(
         leftString: String,
         middleString: String,
         rightString: String,
-        leftBold: Boolean = false,
-        middleBold: Boolean = false,
-        rightBold: Boolean = false,
-        allBold: Boolean = false
+        leftBold: Boolean,
+        middleBold: Boolean,
+        rightBold: Boolean,
+        leftDoubleHeight: Boolean,
+        middleDoubleHeight: Boolean,
+        rightDoubleHeight: Boolean,
     ) {
         buffer.put(
             WoosimHelper.addThreeMarginedStrings(
@@ -59,8 +52,8 @@ class WoosimWSPi350Driver(
                 leftBold = leftBold,
                 middleBold = middleBold,
                 rightBold = rightBold,
-                allBold = allBold,
-                len = printerPageWidth - 1
+                allBold = leftBold && middleBold && rightBold,
+                pageLength = printerPageWidth
             )
         )
     }

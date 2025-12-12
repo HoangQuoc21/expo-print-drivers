@@ -22,7 +22,8 @@ private object FontSize {
 class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
     BaseDriver(bluetoothService, context) {
     override var driverName = "HoneywellPR3Driver"
-    override var printerPageWidth: Int = 44
+    override var printerPageWidth: Int = 27
+    override var separateLineLength: Int = 63
     var imageHeadWidth: Int = 576 // in dots
 
     private fun wrapTextToWidth(text: String, paint: Paint, maxWidth: Float): List<String> {
@@ -258,6 +259,93 @@ class HoneywellPR3Driver(bluetoothService: BluetoothService, context: Context) :
         middleDoubleHeight: Boolean,
         rightDoubleHeight: Boolean,
     ) {
-        TODO("Not yet implemented")
+        val leftText = leftString.trimEnd('\n')
+        val middleText = middleString.trimEnd('\n')
+        val rightText = rightString.trimEnd('\n')
+
+        if (leftText.isEmpty() && middleText.isEmpty() && rightText.isEmpty()) return
+
+        val bitmap = createThreeAlignedTextBitmap(
+            leftText, middleText, rightText,
+            leftBold, middleBold, rightBold,
+            leftDoubleHeight, middleDoubleHeight, rightDoubleHeight
+        )
+
+        val docLP = DocumentLP("!")
+        docLP.writeImage(bitmap, imageHeadWidth)
+        buffer.put(docLP.documentData)
+        bitmap.recycle()
+    }
+
+    private fun createThreeAlignedTextBitmap(
+        leftText: String,
+        middleText: String,
+        rightText: String,
+        leftBold: Boolean,
+        middleBold: Boolean,
+        rightBold: Boolean,
+        leftDoubleHeight: Boolean,
+        middleDoubleHeight: Boolean,
+        rightDoubleHeight: Boolean
+    ): Bitmap {
+        // Create paints for each text
+        val leftPaint = Paint().apply {
+            color = Color.BLACK
+            isAntiAlias = false
+            textSize = if (leftDoubleHeight) FontSize.DOUBLE else FontSize.NORMAL
+            typeface = if (leftBold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+        }
+
+        val middlePaint = Paint().apply {
+            color = Color.BLACK
+            isAntiAlias = false
+            textSize = if (middleDoubleHeight) FontSize.DOUBLE else FontSize.NORMAL
+            typeface = if (middleBold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+        }
+
+        val rightPaint = Paint().apply {
+            color = Color.BLACK
+            isAntiAlias = false
+            textSize = if (rightDoubleHeight) FontSize.DOUBLE else FontSize.NORMAL
+            typeface = if (rightBold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+        }
+
+        // Measure text metrics
+        val leftMetrics = leftPaint.fontMetrics
+        val middleMetrics = middlePaint.fontMetrics
+        val rightMetrics = rightPaint.fontMetrics
+
+        val lineHeight = maxOf(
+            (leftMetrics.descent - leftMetrics.ascent),
+            (middleMetrics.descent - middleMetrics.ascent),
+            (rightMetrics.descent - rightMetrics.ascent)
+        ).toInt()
+
+        val totalHeight = lineHeight + 8
+
+        // Create bitmap
+        val bitmap = createBitmap(imageHeadWidth, totalHeight)
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(Color.WHITE)
+
+        // Calculate y position for each text (align to baseline)
+        val leftY = -leftMetrics.ascent + 4f
+        val middleY = -middleMetrics.ascent + 4f
+        val rightY = -rightMetrics.ascent + 4f
+
+        // Draw left text at left side
+        canvas.drawText(leftText, 4f, leftY, leftPaint)
+
+        // Draw middle text at center
+        val middleWidth = middlePaint.measureText(middleText)
+        val middleX = (imageHeadWidth - middleWidth) / 2
+        canvas.drawText(middleText, middleX, middleY, middlePaint)
+
+        // Draw right text at right side
+        val rightWidth = rightPaint.measureText(rightText)
+        val rightX = imageHeadWidth - rightWidth - 4f
+        canvas.drawText(rightText, rightX, rightY, rightPaint)
+
+        return bitmap
     }
 }
