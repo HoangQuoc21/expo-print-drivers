@@ -95,8 +95,7 @@ abstract class BaseDriver(
         val nhanVien = getStringValueByKey(jsonData, "nhanVien")
         val dienThoaiNhanVien = getStringValueByKey(jsonData, "dienThoaiNhanVien")
         val maQR = getStringValueByKey(jsonData, "maQR")
-
-
+        
         addSeparateLineToBuffer()
         addAlignedStringToBuffer(
             "$tenCongTy\n", WoosimCmd.ALIGN_CENTER, bold = true
