@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "prebuild": "expo prebuild --clean"
+    "prebuild": "expo prebuild --clean",
+    "build:apk": "cd android && ./gradlew assembleRelease && cd .."
   },
   "dependencies": {
     "@types/lodash": "^4.17.21",
