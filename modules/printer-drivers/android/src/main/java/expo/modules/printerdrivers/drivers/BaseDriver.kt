@@ -127,7 +127,7 @@ abstract class BaseDriver(
         addSeparateLineToBuffer()
         addAlignedStringToBuffer("-NV: $nhanVien\n")
         addAlignedStringToBuffer("-ĐT: $dienThoaiNhanVien\n")
-        addAlignedStringToBuffer("Sau 3 ngày làm việc, kể từ ngày ghi chỉ số nước, dữ liệu hoá đơn sẽ được cập nhật . tại website:\n")
+        addAlignedStringToBuffer("Sau 3 ngày làm việc, kể từ ngày ghi chỉ số nước, dữ liệu hoá đơn sẽ được cập nhật tại website:\n")
         addAlignedStringToBuffer("www.capnuocthuduc.com\n")
         addAlignedStringToBuffer("Quý khách vui lòng kiểm tra lại số điện thoại trên phiếu báo này liên hệ đội QLGTN:\n")
         addAlignedStringToBuffer("(028) 38.001.002 để cập nhật lại nếu chưa chính xác.")
