@@ -21,15 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.1] - 2025-16-12
 
-### Added
-
-### Fixed
-
 ### Changed
 
 - Chỉnh lại layout nội dung in và đổi tên hàm "testGiayBaoTienNuoc" thành "giayBaoTienNuocBenThanh"
 
-### Removed
+### Fixed
+
+- Nâng version một số thư viện do expo yêu cầu
 
 ---
 
