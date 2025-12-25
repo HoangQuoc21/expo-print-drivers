@@ -1,35 +1,54 @@
 import ExpoModulesCore
 
 public class PrinterDriversModule: Module {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
-  public func definition() -> ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('PrinterDrivers')` in JavaScript.
-    Name("PrinterDrivers")
-
-    // Defines constant property on the module.
-    Constant("PI") {
-      Double.pi
+    public func definition() -> ModuleDefinition {
+        Name("PrinterDrivers")
+        
+        // === Data sending to TS layer ===
+        Events(
+            "onDeviceConnected",
+            "onDeviceDisconnected",
+            "onConnectionFailed",
+            "onConnectionLost",
+            "onDataReceived"
+        )
+        
+        // Expose constants
+        Constant("PrinterType"){
+             [
+                "WOOSIM_WSP_i350": 1,
+                "HONEYWELL_0188": 2,
+                "HONEYWELL_PR3": 3
+            ]
+        }
+        
+        Constant("BluetoothConnectionState"){
+            [
+                "NONE" : 0,
+                "LISTEN": 1,
+                "CONNECTING": 2,
+                "CONNECTED": 3,
+            ]
+        }
+        
+        Function("getBluetoothState"){
+             "Not supported yet"
+        }
+        
+        Function("isBluetoothAvailable") {
+            false
+        }
+        
+        AsyncFunction("getPairedDevices"){
+            
+        }
+        
+        AsyncFunction("connect"){
+            
+        }
+        
+        AsyncFunction("disconnect"){
+            
+        }
     }
-
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
-
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      return "Hello world! 👋"
-    }
-
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { (value: String) in
-      // Send an event to JavaScript.
-      self.sendEvent("onChange", [
-        "value": value
-      ])
-    }
-  }
 }
