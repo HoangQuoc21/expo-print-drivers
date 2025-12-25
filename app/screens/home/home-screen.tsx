@@ -1,14 +1,5 @@
-import { StatusBar } from "expo-status-bar";
-import * as Application from "expo-application";
 import { ReactNode, useEffect, useState } from "react";
-import {
-  Button,
-  ScrollView,
-  View,
-  Text,
-  Alert,
-  TouchableOpacity,
-} from "react-native";
+import { Button, View, Text, Alert, TouchableOpacity } from "react-native";
 import {
   useBluetoothPermissions,
   useBluetoothEnabled,
@@ -18,40 +9,12 @@ import {
   TicketPrinter,
   PrinterType,
 } from "@/modules/printer-drivers";
-import { styles } from "./home-screen.styles";
 import { isEmpty, isEqual } from "lodash";
 import { FileHelper } from "@/app/utils/helpers";
-import { TIME_UNITS } from "@/app/utils/constants";
+import { TIME_UNITS, TEST_DATA } from "@/app/utils/constants";
 import { colors } from "@/app/utils/theme";
-
-const MA_QR =
-  "https://drive.google.com/uc?export=download&id=1FCei2L9FDxxN4I7qKz_36aBFJoamtI4Z";
-
-const testPrinterData = {
-  tenCongTy: "CTY CỔ PHẦN CẤP NƯỚC THỦ ĐỨC",
-  tenPhieu: "PHIẾU BÁO CHỈ SỐ VÀ TIỀN NƯỚC",
-  ky: "06/2025",
-  tuNgay: "14/05/2025",
-  denNgay: "13/06/2025",
-  mdb: "16143500798",
-  mlt: "091218000",
-  khachHang: "CHU VAN TAN",
-  soDienThoai: "0969189026",
-  diaChi: "10 DUONG 55-KP3, PHUONG CAT LAI, THANH PHO HO CHI MINH, VIET NAM",
-  giaBieu: "15",
-  dinhMuc: "0",
-  chiSoMoi: "957",
-  chiSoCu: "935",
-  tieuThu: "22",
-  tienNuoc: "468.600",
-  thueVat: "24.430",
-  dvtn: "140.580",
-  vatDvtn: "11.246",
-  tienKyMoi: "643.856",
-  nhanVien: "VŨ HOÀNG QUỐC VIỆT",
-  dienThoaiNhanVien: "0933445442",
-  maQR: "qr-code.png",
-};
+import { AppTitle, Screen } from "@/app/components";
+import { styles } from "./home-screen.styles";
 
 export const HomeScreen = () => {
   const [devices, setDevices] = useState<BluetoothDevice[]>([]);
@@ -100,7 +63,7 @@ export const HomeScreen = () => {
   useEffect(() => {
     const qrExists = FileHelper.checkFileExists("qr-code.png");
     if (!qrExists) {
-      FileHelper.downloadFile(MA_QR, "qr-code.png");
+      FileHelper.downloadFile(TEST_DATA.MA_QR, "qr-code.png");
     } else {
       console.log("--> QR file URI:", FileHelper.getFileUri("qr-code.png"));
     }
@@ -154,7 +117,7 @@ export const HomeScreen = () => {
 
     setPrintDisabled(true);
     if (usingDriver) {
-      TicketPrinter.giayBaoTienNuocBenThanh(usingDriver, testPrinterData);
+      TicketPrinter.giayBaoTienNuocBenThanh(usingDriver, TEST_DATA.PRINT_DATA);
     } else {
       Alert.alert(
         "Printing Error",
@@ -166,13 +129,7 @@ export const HomeScreen = () => {
     }, TIME_UNITS.SECOND * 2);
   };
 
-  const renderHeader = () => (
-    <Text
-      style={styles.title}
-    >{`Bluetooth Printer (${Application.nativeApplicationVersion}+${Application.nativeBuildVersion})`}</Text>
-  );
-
-  const renderBluetoothStatus = () => {
+  const BluetoothStatus = () => {
     if (enabledLoading) {
       return <Text style={styles.permissionText}>Checking Bluetooth...</Text>;
     }
@@ -202,7 +159,7 @@ export const HomeScreen = () => {
     );
   };
 
-  const renderPermissionStatus = () => {
+  const PermissionStatus = () => {
     let innerComponent: ReactNode;
 
     if (permissionLoading) {
@@ -306,7 +263,7 @@ export const HomeScreen = () => {
     );
   };
 
-  const renderDeviceList = () => {
+  const DeviceList = () => {
     if (!isAvailable || !isEnabled || isEmpty(devices)) {
       return <Text style={styles.emptyText}>No devices found</Text>;
     }
@@ -318,7 +275,7 @@ export const HomeScreen = () => {
     );
   };
 
-  const renderRefreshButton = () => {
+  const RefreshButton = () => {
     return (
       <TouchableOpacity
         style={[
@@ -341,17 +298,14 @@ export const HomeScreen = () => {
   };
 
   return (
-    <View style={styles.screen}>
-      <ScrollView style={styles.container}>
-        {renderHeader()}
-        {renderBluetoothStatus()}
-        {renderPermissionStatus()}
-        {renderRefreshButton()}
-        <Text style={styles.subtitle}>Paired Devices:</Text>
-        {renderDeviceList()}
-      </ScrollView>
-      <StatusBar style="auto" />
-    </View>
+    <Screen>
+      <AppTitle />
+      <BluetoothStatus />
+      <PermissionStatus />
+      <RefreshButton />
+      <Text style={styles.subtitle}>Paired Devices:</Text>
+      <DeviceList />
+    </Screen>
   );
 };
 
