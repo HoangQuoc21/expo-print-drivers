@@ -1,25 +1,27 @@
-import PrinterDriversModeule from "./src/PrinterDriversModule";
+import PrinterDriversModule from "./src/PrinterDriversModule";
 
 export * from "./src/PrinterDrivers.types";
 export * from "./src/hooks";
 
 export const BluetoothService = {
-  getState: () => PrinterDriversModeule.getBluetoothState(),
-  isAvailable: () => PrinterDriversModeule.isBluetoothAvailable(),
-  isEnabled: () => PrinterDriversModeule.isBluetoothEnabled(),
+  getState: () => PrinterDriversModule.getBluetoothState(),
+  isAvailable: () => PrinterDriversModule.isBluetoothAvailable(),
+  isEnabled: () => PrinterDriversModule.isBluetoothEnabled(),
   async getPairedDevices() {
-    return await PrinterDriversModeule.getPairedDevices();
+    return await PrinterDriversModule.getPairedDevices();
   },
   async connect(address: string, secure: boolean) {
-    return await PrinterDriversModeule.connect(address, secure);
+    return await PrinterDriversModule.connect(address, secure);
   },
   async disconnect() {
-    return await PrinterDriversModeule.disconnect();
+    return await PrinterDriversModule.disconnect();
   },
 };
 
 export const TicketPrinter = {
   giayBaoTienNuocBenThanh(printerType: string, jsonData: object) {
-    PrinterDriversModeule.giayBaoTienNuocBenThanh(printerType, jsonData);
+    PrinterDriversModule.giayBaoTienNuocBenThanh(printerType, jsonData);
   },
 };
+
+export const PrinterType = PrinterDriversModule.PrinterType;

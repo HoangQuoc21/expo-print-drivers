@@ -1,63 +1,13 @@
 import { StyleSheet } from "react-native";
-
-export const colors = {
-  primary: "#2196F3",
-  success: "#4CAF50",
-  warning: "#FF9800",
-  error: "#f44336",
-  white: "#FFFFFF",
-  gray: "#666",
-  lightGray: "#999",
-  borderGray: "#BDBDBD",
-  disabledText: "#757575",
-  successBg: "#E8F5E9",
-  warningBg: "#FFF3E0",
-  errorBg: "#FFEBEE",
-};
-
-const shadows = {
-  small: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-};
-
-const baseCard = {
-  backgroundColor: colors.white,
-  padding: 15,
-  borderRadius: 8,
-  marginBottom: 15,
-};
-
-const baseButton = {
-  paddingVertical: 10,
-  paddingHorizontal: 20,
-  borderRadius: 6,
-  alignItems: "center" as const,
-  justifyContent: "center" as const,
-};
-
-const baseButtonText = {
-  color: colors.white,
-  fontSize: 14,
-  fontWeight: "600" as const,
-};
-
-const baseStatusCard = {
-  ...baseCard,
-  borderWidth: 2,
-  alignItems: "center" as const,
-  justifyContent: "center" as const,
-};
-
-const baseStatusText = {
-  fontSize: 14,
-  fontWeight: "600" as const,
-  textAlign: "center" as const,
-};
+import {
+  colors,
+  baseCard,
+  baseStatusCard,
+  baseStatusText,
+  shadows,
+  baseButton,
+  baseButtonText,
+} from "@/app/utils/theme";
 
 export const styles = StyleSheet.create({
   screen: {
